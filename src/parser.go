@@ -52,7 +52,8 @@ func parseK8sElement(k8sObject []byte) error {
 		deployment := deploymentObject.(*apps.Deployment)
 		fmt.Println("==== deployment.yaml ====")
 		fmt.Printf("Namespace: %s\n", deployment.ObjectMeta.GetNamespace())
-		fmt.Printf("Resources: %+v\n", deployment.Spec.Template.Spec.Containers[0].Resources.Limits["cpu"])
+		fmt.Printf("Name: %+v\n", deployment.Name)
+		fmt.Printf("Container Name: %+v\n", deployment.Spec.Template.Spec.Containers[0].Name)
 	} else if k8sMeta.Kind == "Service" {
 		obj, _, err := deserializer.Decode(k8sObject, nil, &core.Service{})
 		if err != nil {
@@ -61,7 +62,8 @@ func parseK8sElement(k8sObject []byte) error {
 		service := obj.(*core.Service)
 		fmt.Println("==== deployment.yaml ====")
 		fmt.Printf("Namespace: %s\n", service.ObjectMeta.GetNamespace())
-		fmt.Printf("ClusterIP: %+v\n", service.Spec.ClusterIP)
+		fmt.Printf("Port: %+v\n", service.Spec.Ports[0].Port)
+		fmt.Printf("Target Port: %+v\n", service.Spec.Ports[0].TargetPort.IntVal)
 	}
 
 	return nil
