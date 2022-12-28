@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  labels: 
+    app: webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: paolo/web-app-example:1.0
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000
+        env:
+        - name: USER_NAME # will create an user with these credentials on container start-up
+          valueFrom: 
+            secretKeyRef: 
+              name: mongo-secret # secret's label
+              key: mongo-user
+        - name: USER_PWD
+          valueFrom: 
+            secretKeyRef: 
+              name: mongo-secret # secret's label
+              key: mongo-password
+        - name: DB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: mongo-config
+              key: mongo-url
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  type: NodePort # default is ClusterIP (internal)
+  selector:
+    app: webapp
+  ports:
+  - port: 3000
+    targetPort: 3000
+    nodePort: 30000

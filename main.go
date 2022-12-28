@@ -7,9 +7,10 @@ import (
 )
 
 func main() {
-	k8sObject, err := ioutil.ReadFile("../mongo-demo/srv1.yaml")
+	yamlFileBytes, err := ioutil.ReadFile("./tests/examples/mongo.yaml")
 	if err != nil {
 		panic(err)
 	}
-	k8sparser.Parse(k8sObject)
+
+	k8sparser.ParseFile(yamlFileBytes)
 }
